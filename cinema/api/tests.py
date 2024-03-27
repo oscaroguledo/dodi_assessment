@@ -1,46 +1,51 @@
-from django.test import TestCase
-
-
-import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
+from ninja.testing import TestClient
 from api.models import Movie
+from api.schemas import MovieSortBy
+from ..cinema import api  # Assuming 'main' is the name of the file where the NinjaAPI instance is defined
+import pytest
 
-# Create your tests here.
-@pytest.mark.django_db
-def test_movie_creation():
-    # Create a Movie instance
-    movie = Movie.objects.create(
-        name='Test Movie',
-        protagonists=['Protagonist 1', 'Protagonist 2'],
-        poster=SimpleUploadedFile('poster.jpg', b'content', content_type='image/jpeg'),
-        trailer=SimpleUploadedFile('trailer.mp4', b'content', content_type='video/mp4'),
-        start_date='2022-01-01',
-        status='coming_up',
-        ranking=0
-    )
-    
-    # Verify that the movie object is created successfully
-    assert movie.id is not None
-    assert movie.name == 'Test Movie'
-    assert movie.protagonists == ['Protagonist 1', 'Protagonist 2']
-    assert movie.poster.name == 'posters/poster.jpg'
-    assert movie.trailer.name == 'trailers/trailer.mp4'
-    assert movie.start_date == '2022-01-01'
-    assert movie.status == 'coming_up'
-    assert movie.ranking == 0
+@pytest.fixture
+def client():
+    return TestClient(api)
 
-@pytest.mark.django_db
-def test_movie_str_representation():
-    # Create a Movie instance
-    movie = Movie.objects.create(
-        name='Test Movie',
-        protagonists=['Protagonist 1', 'Protagonist 2'],
-        poster=SimpleUploadedFile('poster.jpg', b'content', content_type='image/jpeg'),
-        trailer=SimpleUploadedFile('trailer.mp4', b'content', content_type='video/mp4'),
-        start_date='2022-01-01',
-        status='coming_up',
-        ranking=0
-    )
-    
-    # Verify the __str__() method of the Movie model
-    assert str(movie) == 'Test Movie'
+def test_add_movie(client):
+    # Prepare payload for adding a movie
+    payload = {
+        "name": "Test Movie",
+        "protagonists": ["Actor 1", "Actor 2"],
+        "status": "starting",
+        "start_date": "2024-03-20",
+        "ranking": 5
+    }
+
+    # Send a POST request to add the movie
+    response = client.post("/movies", data=payload)
+    assert response.status_code == 200  # Assuming success status code is 200
+
+    # Check if the movie was added successfully
+    movie_data = response.json()["response"]
+    assert movie_data["name"] == "Test Movie"
+    # Add more assertions for other fields if needed
+
+def test_get_movie_by_id(client):
+    # Add a movie to the database for testing
+    movie = Movie.objects.create(name="Test Movie", protagonists=["Actor 1", "Actor 2"], status="starting", start_date="2024-03-20", ranking=5)
+
+    # Send a GET request to retrieve the movie by ID
+    response = client.get(f"/movies/{movie.id}")
+    assert response.status_code == 200  # Assuming success status code is 200
+
+    # Check if the movie data matches the expected data
+    movie_data = response.json()["response"]
+    assert movie_data["name"] == "Test Movie"
+    # Add more assertions for other fields if needed
+
+def test_get_all_movies(client):
+    # Send a GET request to retrieve all movies
+    response = client.get("/movies", params={"sort_by": MovieSortBy.name.value})
+    assert response.status_code == 200  # Assuming success status code is 200
+
+    # Check if the response contains a list of movies
+    movies = response.json()["response"]
+    assert isinstance(movies, list)
+    # Add more assertions if needed

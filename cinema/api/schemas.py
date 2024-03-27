@@ -96,5 +96,7 @@ class Response(NinjaResponse):
         self.message = message
         self.response = response
         self.status = status
-        data = {"success": success, "message": message, "response": response}
+        data = {"success": success, "message": message}
+        if response:
+            data['response']=response
         super().__init__(data, status=status)
