@@ -1,5 +1,4 @@
 from django.db import models
-
 import uuid
 # Create your models here.
 
@@ -7,7 +6,6 @@ class Movie(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, unique=True)
     protagonists = models.JSONField()
-    #genre = models.JSONField()
     poster=models.ImageField(upload_to='posters/')
     trailer = models.FileField(upload_to='trailers/')
     start_date = models.DateField(null=False, blank=False)

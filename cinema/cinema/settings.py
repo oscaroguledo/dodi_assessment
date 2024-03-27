@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
+import api.tasks
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "api",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -124,3 +128,22 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 300  # Set 300 to the desired value in megabytes
+
+CELERY_BROKER_URL= 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TIMEZONE = 'UTC'
+CELERY_RESULT_BACKEND= 'django-db'
+
+CELERY_BEAT_SCHEDULE = {
+    "increase_movie_ranking": {
+        "task": "api.tasks.increase_movie_ranking",
+        "schedule": 300.0, #300secs --> 5mins
+        'options': {
+            'expires': 15.0,
+        },
+    },
+}

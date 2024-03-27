@@ -1,19 +1,45 @@
 from ninja import NinjaAPI, Query, UploadedFile,File, errors, Form
 from api.models import Movie, models
-from api.schemas import MovieSchema, Response, MovieFilterSchema,MovieSortBy, MovieSorting
+from api.schemas import MovieSchema, MovieSortBy, MovieSorting
 from typing import List
 import uuid, json, datetime
 
+from ninja.responses import Response as NinjaResponse
+
+class InvalidResponseDataError(Exception):
+    def __str__(self):
+        return "\033[91m" + str(self.args[0]) + "\033[0m"
+
+class Response(NinjaResponse):
+    def __init__(self, success=None, message=None, response=None, status=None):
+        if success not in (True, False):
+            raise InvalidResponseDataError("success value must be either True or False")
+        if message is None:
+            raise InvalidResponseDataError("message value cannot be None")
+        if status is None:
+            status = 200
+        
+        self.success = success
+        self.message = message
+        self.response = response
+        self.status = status
+        data = {"success": success, "message": message}
+        if response:
+            data['response']=response
+        super().__init__(data, status=status)
+
+
 api = NinjaAPI()
 
-@api.get("/")
-def app_status(request):
-    return Response(
-        success=True,
-        message="Info",
-        response="Cinema Program 1.0",
-        status=200,
-    )
+class InfoApi:
+    @api.get("/")
+    def app_status(request):
+        return Response(
+            success=True,
+            message="Info",
+            response="Cinema Program 1.0",
+            status=200,
+        )
 
 class MovieApi:
     @api.post("/movies")
@@ -23,19 +49,19 @@ class MovieApi:
         if not validation_result['success']:
             return Response(success=False, message="Invalid data",response=validation_result['error'],status=400)
         
-        movie= Movie.objects.get(name=payload.name)
+        movie= Movie.objects.filter(name=payload.name)
         if movie:
             return Response(
                 success=False,
                 message="Movie already exists",
-                response={"id":movie.id,"name":movie.name},
+                response={"id":movie[0].id,"name":movie[0].name},
                 status=400
             )
         
         # Create the Movie instance
         movie_instance = Movie(
             name=payload.name, 
-            protagonists=payload.protagonists,
+            protagonists=eval(payload.protagonists[0]),
             ranking=payload.ranking,
             status=payload.status,
             poster = poster,
@@ -48,7 +74,7 @@ class MovieApi:
         return Response(
             success=True,
             message="Movie added successfully",
-            response=MovieSchema.from_orm(movie_instance),
+            response={"id":movie_instance.id,"name":movie_instance.name},
             status=200
         )
 
