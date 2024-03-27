@@ -37,8 +37,6 @@ class MovieSchema(Schema):
     ranking: Optional[int]
     status: MovieStatus
     start_date: str
-    poster: Optional[Union[str, bytes]]
-    trailer: Optional[str]
 
     
     def validate_name(self, value):

@@ -1,4 +1,4 @@
-from ninja import NinjaAPI, Query, UploadedFile,File, errors
+from ninja import NinjaAPI, Query, UploadedFile,File, errors, Form
 from api.models import Movie, models
 from api.schemas import MovieSchema, Response, MovieFilterSchema,MovieSortBy, MovieSorting
 from typing import List
@@ -16,18 +16,13 @@ def app_status(request):
     )
 
 class MovieApi:
-    @api.post("/movies", response=MovieSchema)
-    def add(request, payload: MovieSchema):
-        
+    @api.post("/movies")
+    def add(request, payload: MovieSchema = Form(...), poster: UploadedFile = File(...),trailer: UploadedFile = File(...)):
         validation_result = payload.is_valid(payload.dict())
 
         if not validation_result['success']:
-            return Response(
-                success=False,
-                message="Invalid data",
-                response=validation_result['error'],
-                status=400
-            )
+            return Response(success=False, message="Invalid data",response=validation_result['error'],status=400)
+        
         movie= Movie.objects.get(name=payload.name)
         if movie:
             return Response(
@@ -43,10 +38,13 @@ class MovieApi:
             protagonists=payload.protagonists,
             ranking=payload.ranking,
             status=payload.status,
+            poster = poster,
+            trailer = trailer,
             start_date=payload._date(payload.start_date),  
         )
         movie_instance.save()
 
+        # Access file data from the UploadedFile objects
         return Response(
             success=True,
             message="Movie added successfully",
@@ -93,6 +91,16 @@ class MovieApi:
         print(list(movies))
         return Response(success=True, message="Successfully retrieved Movies", response=list(movies), status=200)
     
+    @api.patch("/movies/{var}")
+    def patch_movie(request, var:uuid.UUID, payload:MovieSchema):
+        movie = Movie.objects.get(id=var)
+        if not movie:
+            return Response(success=False,message="Movie not found",response=None,status=404)
+        for attr, value in payload.dict().items():
+            setattr(movie, attr, value)
+        movie.save()
+        return Response(success=True,message="Movie updated successfully",response=None,status=200)
+
     @api.delete("/movies/{var}")
     def delete_movie(request, var:uuid.UUID):
         movie = Movie.objects.filter(id=var)
