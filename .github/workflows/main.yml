@@ -27,4 +27,4 @@ jobs:
       run: chmod +x cinema/api/tests.py
     - name: Run tests
       
-      run: cinema/api/tests.py
+      run: py cinema/api/tests.py
