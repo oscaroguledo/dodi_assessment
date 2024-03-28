@@ -17,6 +17,7 @@ redis = "^5.0.3"
 django-celery-results = "^2.5.1"
 django-celery-beat = "^2.6.0"
 requests-futures = "^1.0.1"
+django-environ = "^0.11.2"
 
 [build-system]
 requires = ["poetry-core"]

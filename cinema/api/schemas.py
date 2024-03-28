@@ -7,13 +7,6 @@ from ninja import NinjaAPI, Query, UploadedFile,File
 from datetime import date, datetime
 
 
-class MovieFilterSchema(FilterSchema):
-    name: Optional[str] = Field(q="name__icontains")
-    status: Optional[str] = Field(q="status__icontains")
-    ranking: Optional[int] = Field(q="ranking__gte")
-    start_date: Optional[date] = Field(q="start_date__gte")
-
-
 class MovieSortBy(Enum):
     name = "name"
     ranking = "ranking"
@@ -55,7 +48,6 @@ class MovieSchema(Schema):
         
         except (AttributeError, ValueError) as e:
             raise ValueError(e)
-
 
     def is_valid(self, data):
         print(data)

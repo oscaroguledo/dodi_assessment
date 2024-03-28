@@ -135,4 +135,10 @@ dist
 .mkv
 .png
 .db
-.sqlite3
+*.sqlite3
+*.pyc
+__pycache__
+db.sqlite3
+/env
+*.env
+.vscode

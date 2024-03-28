@@ -130,6 +130,9 @@ django-celery-beat==2.6.0 ; python_version >= "3.12" and python_version < "4.0" 
 django-celery-results==2.5.1 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:0da4cd5ecc049333e4524a23fcfc3460dfae91aa0a60f1fae4b6b2889c254e01 \
     --hash=sha256:3ecb7147f773f34d0381bac6246337ce4cf88a2ea7b82774ed48e518b67bb8fd
+django-environ==0.11.2 ; python_version >= "3.12" and python_version < "4" \
+    --hash=sha256:0ff95ab4344bfeff693836aa978e6840abef2e2f1145adff7735892711590c05 \
+    --hash=sha256:f32a87aa0899894c27d4e1776fa6b477e8164ed7f6b3e410a62a6d72caaf64be
 django-ninja==1.1.0 ; python_version >= "3.12" and python_version < "4.0" \
     --hash=sha256:6330c3497061d9fd1f43c1200f85c13aab7687110e2899f8304e5aa476c10b44 \
     --hash=sha256:87bff046416a2653ed2fbef1408e101292bf8170684821bac82accfd73bef059
