@@ -33,6 +33,7 @@
 ** Let's Have a Show!:**
 
 1. **Start the Django Development Server:**
+   - Your `.env` file should be in same directory as your `manage.py` file
    - Terminal 1: `python manage.py runserver`
 2. **Unleash Celery:**
    - Terminal 2: `celery -A cinema.celery beat --loglevel=info`
