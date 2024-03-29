@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from celery.schedules import crontab
 
-import api.tasks
+import movies.tasks
 import environ
 env = environ.Env()
 environ.Env.read_env()
@@ -30,7 +30,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "api",
+    "movies",
     "django_celery_results",
     "django_celery_beat",
 ]
@@ -147,7 +147,7 @@ CELERY_RESULT_BACKEND= 'django-db'
 
 CELERY_BEAT_SCHEDULE = {
     "increase_movie_ranking": {
-        "task": "api.tasks.increase_movie_ranking",
+        "task": "movies.tasks.increase_movie_ranking",
         "schedule": 300.0, #300secs --> 5mins
         'options': {
             'expires': 15.0,
