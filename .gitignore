@@ -142,3 +142,4 @@ db.sqlite3
 /env
 *.env
 .vscode
+docker-compose.yml
