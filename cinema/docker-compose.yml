@@ -14,7 +14,9 @@ services:
       - db_data:/var/lib/postgresql/data
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: ./DockerFile
     container_name: django
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -32,7 +34,9 @@ services:
 
 
   celery_worker:
-    build: .
+    build:
+      context: .
+      dockerfile: ./DockerFile
     command: celery -A cinema.celery worker --pool=solo --loglevel=info
     volumes:
       - .:/app
@@ -40,7 +44,9 @@ services:
       - my-postgres
 
   celery_beat:
-    build: .
+    build:
+      context: .
+      dockerfile: ./DockerFile
     command: celery -A cinema.celery beat --loglevel=info
     volumes:
       - .:/app
