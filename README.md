@@ -13,30 +13,59 @@
 
 - Build an API endpoint to seamlessly add new movies to the cinema program
 
-**✨ Set Up:✨ **
+**✨ Set Up: Manually✨ **
 
 1. **Install Python 12**
 2. **Install pip**
 3. **Install and Start Redis:**
-   - Follow platform-specific instructions ([link for Windows, macOS, or Linux instructions])
-   - Test with `redis-cli ping`
-4. **Create a Virtual Environment:**
-   - Activate it for a clean setup
-5. **Clone the Repository:**
+   - Windows 
+      - Enable WSL2: Search for "Turn Windows features on or off" and enable "Virtual Machine Platform" and "Optional feature directory - Subsystem for Linux". Reboot if prompted.
+      - Install WSL2 Kernel: Open a PowerShell window as administrator and run **wsl --install -d Ubuntu **(replace Ubuntu with your preferred Linux distribution)
+      - Open Ubuntu: Search for "Ubuntu" in the Start menu.
+      - Update Package Manager: Run **sudo apt update**
+      - Install Redis: Run **sudo apt install redis-server**
+      - Start Redis: Run sudo redis-server (consider using a service manager for automatic startup)
+   - Mac 
+   ```shell
+      brew install redis
+   ```
+   - Linux
+   ```bash
+      # Debian/Ubuntu: 
+      sudo apt update && sudo apt install redis-server
+      # CentOS/RHEL: 
+      sudo yum update && sudo yum install redis
+      # Fedora: 
+      sudo dnf update && sudo dnf install redis
+   ```
+   
+4. **Clone the Repository:**
    - `git clone https://github.com/oscaroguledo/dodi_assessment.git`
-6. **Install Dependencies:**
+5. **Install Dependencies:**
    - `pip install -r requirements.txt`
 
-** ✨ Running the application: ✨ **
-
-1. **Start the Django Development Server:**
+6. **Start the Django Development Server:**
    - Your `.env` file should be in same directory as your `manage.py` file
    - Terminal 1: `python manage.py runserver`
-2. **Unleash Celery:**
+7. **Unleash Celery:**
    - Terminal 2: `celery -A cinema.celery beat --loglevel=info`
    - Terminal 3: `celery -A cinema.celery worker --pool=solo --loglevel=info`
-3. **Run Tests (Ensure Cinematic Quality):**
+8. **Run Tests :**
    - Terminal 1: `pytest`
+
+
+**✨ Set Up: Docker✨ **
+1. **Clone the Repository:**
+   - `git clone https://github.com/oscaroguledo/dodi_assessment.git`
+2. **Install Dependencies:**
+   - `pip install -r requirements.txt`
+3. **run the command in terminal**
+      ``` 
+      # docker-compose up
+      ```
+4. **Run Tests :**
+   - Terminal 1: `pytest`
+
 
 **✨ Test apis: ✨ **
    **While the server is running:** 
