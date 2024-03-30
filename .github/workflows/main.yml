@@ -26,4 +26,4 @@ jobs:
     
     - name: Run tests
       
-      run: pytest --rootdir=cinema
+      run: pytest --rootdir=cinema/cinema

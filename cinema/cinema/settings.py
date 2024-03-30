@@ -152,5 +152,8 @@ CELERY_BEAT_SCHEDULE = {
         'options': {
             'expires': 15.0,
         },
+        
+        "max_retries": 10,
+        "retry_delay": 1,
     },
 }
