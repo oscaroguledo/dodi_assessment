@@ -1,4 +1,7 @@
 version: '3.8'
+networks:
+  cinema_network:
+    driver: bridge
 
 services:
   my-postgres:
@@ -14,6 +17,8 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - cinema_network
 
   web:
     build:
@@ -22,7 +27,10 @@ services:
     env_file:
       - .env
     container_name: django
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+        sh -c "python manage.py makemigrations && 
+                python manage.py migrate && 
+                python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
     environment:
@@ -36,6 +44,8 @@ services:
     depends_on:
       - my-postgres
       - redis
+    networks:
+      - cinema_network
     
 
 
@@ -51,6 +61,8 @@ services:
     depends_on:
       - my-postgres
       - redis
+    networks:
+      - cinema_network
 
   celery_beat:
     build:
@@ -64,6 +76,8 @@ services:
     depends_on:
       - my-postgres
       - redis
+    networks:
+      - cinema_network
 
   redis:
     image: redis:latest
@@ -78,6 +92,8 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_DATABASES=${REDIS_DATABASES}
+    networks:
+      - cinema_network
 
 volumes:
   db_data:

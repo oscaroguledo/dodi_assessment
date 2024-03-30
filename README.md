@@ -46,7 +46,10 @@
 
 6. **Start the Django Development Server:**
    - Your `.env` file should be in same directory as your `manage.py` file
-   - Terminal 1: `python manage.py runserver`
+   - Terminal 1: 
+      # python manage.py makemigrations
+      # python manage.py migrate
+      # python manage.py runserver
 7. **Unleash Celery:**
    - Terminal 2: `celery -A cinema.celery beat --loglevel=info`
    - Terminal 3: `celery -A cinema.celery worker --pool=solo --loglevel=info`
