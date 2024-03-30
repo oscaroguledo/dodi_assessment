@@ -12,8 +12,6 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-    env:
-      - .env
 
   web:
     build: .
@@ -22,7 +20,6 @@ services:
     volumes:
       - .:/app
     environment:
-      - DJANGO_ENV=${DB_ENV}
       - DATABASE_NAME=${DB_NAME}
       - DATABASE_USER=${DB_USER}
       - DATABASE_PASSWORD=${DB_PASSWORD}
@@ -32,8 +29,7 @@ services:
       - "8000:8000"
     depends_on:
       - my-postgres
-    env:
-      - .env
+
 
   celery_worker:
     build: .
@@ -42,8 +38,6 @@ services:
       - .:/app
     depends_on:
       - my-postgres
-    env:
-      - .env
 
   celery_beat:
     build: .
@@ -52,8 +46,6 @@ services:
       - .:/app
     depends_on:
       - my-postgres
-    env:
-      - .env
 
 volumes:
   db_data:
