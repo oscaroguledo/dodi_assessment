@@ -136,8 +136,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 300  # Set 300 to the desired value in megabytes
 
-CELERY_BROKER_URL= 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL= env("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
