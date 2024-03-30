@@ -1,11 +1,11 @@
 from ninja import Query, UploadedFile,File, Form
 from .models import Movie, models
-from movies.schemas import MovieSchema, MovieSortBy, MovieSorting
-from typing import List
+from movies.schemas import MovieSchema,UpdateMovieSchema, MovieSortBy, MovieSorting
+from typing import List, Optional
 import uuid, datetime
 from movies.utils import Response
 from ninja import Router
-
+from django.core.files.storage import default_storage
 router = Router()
 
 @router.post("/")
@@ -88,22 +88,47 @@ def get_movies(request, sort_by: MovieSorting = Query(...)):
 
     return Response(success=True, message="Successfully retrieved Movies", response=list(movies), status=200)
     
-@router.put("/{id}")
-def update_movie(request, id:uuid.UUID, payload: MovieSchema = Form(...), poster: UploadedFile = File(...),trailer: UploadedFile = File(...) ):
-    print('============================pplkongbvfb')
-    validation_result = payload.is_valid(payload.dict())
-
-    if not validation_result['success']:
-        return Response(success=False, message="Invalid data",response=validation_result['error'],status=400)
-        
-    movie = Movie.objects.get(id=id)
-    if not movie:
-        return Response(success=False,message="Movie not found",response=None,status=404)
-    print(movie,'||||||||||||||||||||||||||')
+@router.patch("/update/{id}")
+def update_movie(request, id: uuid.UUID, payload: UpdateMovieSchema = Form(...)):
+    try:
+        movie = Movie.objects.get(id=id)
+    except Movie.DoesNotExist:
+        return Response(success=False, message="Movie not found", response=None, status=404)
+    if len(request.body) > 0:
+        data = request.body.decode('utf-8')
+    payload.populate_originals(movie)
+    # Update movie fields based on payload (as before)
+    for field, value in payload.dict().items():
+        if value is not None:
+            validation_result = payload.is_valid(payload.dict())
+            if not validation_result['success']:
+                return Response(success=False, message="Invalid data", response=validation_result['error'], status=400)
+            try:
+                patch_value = data[len(field)+data.index(field)+1:data.index("&")]
+                if len(patch_value) > 0:
+                    if field == 'name':
+                        movie.name=patch_value
+                    elif field == 'protagonists':
+                        movie.protagonists=list(patch_value.split(","))
+                    elif field =='status':
+                        movie.status=patch_value
+                    elif field == 'ranking':
+                        movie.ranking=patch_value
+                    elif field =='start_date':
+                        movie.start_date=payload._date(patch_value)
+                    elif field == 'poster':
+                        movie.poster = payload.poster
+                    elif field == 'trailer':
+                        movie.trailer = payload.trailer
+                    else:
+                        movie.field=patch_value
+            except Exception as e:
+                pass
     movie.save()
+
     return Response(success=True,message="Movie updated successfully",response=None,status=200)
 
-@router.delete("/{id}")
+@router.delete("/delete/{id}")
 def delete_movie(request,id:uuid.UUID):
     print(id, "---",type(id))
     movie = Movie.objects.filter(id=id)
