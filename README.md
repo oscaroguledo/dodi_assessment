@@ -23,7 +23,7 @@
 4. **Create a Virtual Environment:**
    - Activate it for a clean setup
 5. **Clone the Repository:**
-   - Grab the project code from its rightful home
+   - `git clone https://github.com/oscaroguledo/dodi_assessment.git`
 6. **Install Dependencies:**
    - `pip install -r requirements.txt`
 
