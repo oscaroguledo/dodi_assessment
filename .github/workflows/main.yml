@@ -27,6 +27,11 @@ jobs:
       - name: Run tests
         env:
           SECRET_KEY: ${{ secrets.ACTION_SECRET }}
+          DB_NAME: ${{ secrets.ACTION_SECRET }}
+          DB_USER: ${{ secrets.ACTION_SECRET }}
+          DB_PASSWORD: ${{ secrets.ACTION_SECRET }}
+          DB_HOST: ${{ secrets.ACTION_SECRET }}
+          DB_PORT: ${{ secrets.ACTION_SECRET }}
         run: pytest cinema/movies/tests.py
 
 
