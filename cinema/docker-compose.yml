@@ -1,8 +1,9 @@
 version: '3.8'
 
 services:
-  db:
+  my-postgres:
     image: postgres:latest
+    container_name: db
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -16,13 +17,21 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver 127.0.0.1:8000
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code
+      - .:/app
+    environment:
+      - DJANGO_ENV=${DB_ENV}
+      - DATABASE_NAME=${DB_NAME}
+      - DATABASE_USER=${DB_USER}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - my-postgres
     env_file:
       - .env
 
@@ -30,9 +39,9 @@ services:
     build: .
     command: celery -A cinema.celery worker --pool=solo --loglevel=info
     volumes:
-      - .:/code
+      - .:/app
     depends_on:
-      - db
+      - my-postgres
     env_file:
       - .env
 
@@ -40,9 +49,9 @@ services:
     build: .
     command: celery -A cinema.celery beat --loglevel=info
     volumes:
-      - .:/code
+      - .:/app
     depends_on:
-      - db
+      - my-postgres
     env_file:
       - .env
 
